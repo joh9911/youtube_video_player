@@ -31,7 +31,6 @@ class Play_Page:
             "font: 12pt Arial;"
             "color: gray;"
         )
-        self.list_upBar.setText("      사용자의 이름이 들어갈 자리")
         self.list_upBar.setReadOnly(True)
 
         self.list_upBar_button = []
@@ -54,6 +53,7 @@ class Play_Page:
         
         self.list_list = []
         self.list_deleteButton = []
+        self.list_playlist_number = []
         
         self.list_groupbox.setLayout(self.list_form)
 
@@ -95,6 +95,26 @@ class Play_Page:
         self.player_upBar_button[0].setText("추가")
         self.player_upBar_button[1].setText("뒤로가기")
 
+        self.player_player = QtWidgets.QFrame(self.player_page)
+        self.player_player.setGeometry(0,40,1100,800)
+
+        self.progressbar = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal,self.player_page)
+        self.progressbar.setGeometry(0,800,1100,50)
+        self.progressbar.setMaximum(1100)        
+
+        self.player_playbutton = []
+        for index in range(0,4):
+            button = QtWidgets.QPushButton(self.player_page)
+            button.setGeometry(10+index*120,850,100,50)
+            self.player_playbutton.append(button)
+        self.player_playbutton[0].setText("◀◀")
+        self.player_playbutton[1].setText("⏸")
+        self.player_playbutton[2].setText("▶▶")
+        self.player_playbutton[3].setText("■")
+
+        self.player_medianame = QtWidgets.QLineEdit(self.player_page)
+        self.player_medianame.setGeometry(500,850,500, 50)
+        
         self.player_groupBox = QtWidgets.QGroupBox("재생목록")
         self.player_form = QtWidgets.QFormLayout()
 
@@ -102,6 +122,7 @@ class Play_Page:
         self.player_deleteButton = []
         self.player_listImage = []
         self.player_listName = []
+        self.player_player_number = []
         
         self.player_groupBox.setLayout(self.player_form)
 

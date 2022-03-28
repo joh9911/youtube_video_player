@@ -73,7 +73,6 @@ class Login_Signup_Page:
         
         self.stackedwidget.addWidget(self.loginPage)
 
-
         self.signupPage = QtWidgets.QWidget()
 
         self.signupPage_input = []
@@ -92,14 +91,14 @@ class Login_Signup_Page:
             "color: gray;"
             )
             input.setReadOnly(True)
+
             input.setCursor(QCursor(QtCore.Qt.CursorShape.IBeamCursor))
             self.signupPage_input.append(input)
         self.signupPage_input[0].setText("ID")
         self.signupPage_input[1].setText("Password")
         self.signupPage_input[2].setText("Password confirm")
         self.signupPage_input[3].setText("Name")
-        # self.signupPage_input[1].setEchoMode(QLineEdit.EchoMode.Password)
-        # self.signupPage_input[2].setEchoMode(QLineEdit.EchoMode.Password)
+
         
         self.signupPage_Error = []
         for index in range(0,2):

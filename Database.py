@@ -14,7 +14,8 @@ class Database:
 
     def createDatabase(self):
         self.cursor.execute("CREATE TABLE IF NOT EXISTS user ( id TEXT PRIMARY KEY, pw TEXT, name TEXT)")
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS playlist (sequence INTEGER PRIMARY KEY,id TEXT, name TEXT, FOREIGN KEY(id) REFERENCES user(id))")
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS playlist (sequence INTEGER PRIMARY KEY,id TEXT, listname TEXT, FOREIGN KEY(id) REFERENCES user(id))")
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS player (sequence INTEGER PRIMARY KEY, playlistnum INT, url TEXT, name TEXT ,FOREIGN KEY(playlistnum) REFERENCES playlist(sequence))")
 
     def loginPage_loginCheck(self, id ,pw):
         data=[id,pw]
@@ -47,7 +48,21 @@ class Database:
         self.cursor.execute(tmp,values)
         self.conn.commit()
 
-    def dataDelete(self,name):
-        data=[name]
-        self.cursor.execute("DELETE FROM playlist WHERE name=?",data)
+    def playlistdataDelete(self,id,num):    
+        self.conn.execute("PRAGMA foreign_keys = 0")
+        data=[id,num]
+        self.cursor.execute("DELETE FROM playlist WHERE id=? AND sequence=?",data)
+        self.conn.commit()
+        self.conn.execute("PRAGMA foreign_keys = 1")
+
+    def playerdataDelete1(self,num):
+        data = [num]
+        print("1",num)
+        self.cursor.execute("DELETE FROM player WHERE playlistnum = ?",data)
+        self.conn.commit()
+    
+    def playerdataDelete2(self,num):
+        data = [num]
+        print("2",num)
+        self.cursor.execute("DELETE FROM player WHERE sequence = ?",data)
         self.conn.commit()
