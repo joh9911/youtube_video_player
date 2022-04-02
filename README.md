@@ -24,3 +24,8 @@ a=10
 b=20
 print(a+b)
 ```
+
+|순번|이름|이메일|
+|---|---|---|
+|1|최민석|cono@stageus.co.kr|
+|2|최효석|best-polite@gamil.com|
