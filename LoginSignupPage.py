@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 
-class Login_Signup_Page:
+class LoginSignupPage:
     
     def __init__(self):
         self.mainWindow = QtWidgets.QMainWindow()
@@ -21,17 +21,17 @@ class Login_Signup_Page:
        
         self.loginPage = QtWidgets.QWidget()
        
-        self.Youtube_logo = QtWidgets.QLabel(self.loginPage)
-        self.Youtube_logo.setGeometry(150, 80, 200, 60)
-        self.Youtube_logo.setStyleSheet(
+        self.youtubeLogo = QtWidgets.QLabel(self.loginPage)
+        self.youtubeLogo.setGeometry(150, 80, 200, 60)
+        self.youtubeLogo.setStyleSheet(
             "border: 1px solid white;"
         )
         pixmap = QPixmap("youtube.png")
         pixmap = pixmap.scaled(200,140,Qt.AspectRatioMode.KeepAspectRatio)  
-        self.Youtube_logo.setPixmap(pixmap)
-        self.Youtube_logo.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.youtubeLogo.setPixmap(pixmap)
+        self.youtubeLogo.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.loginPage_input = []
+        self.loginPageInput = []
 
         for index in range(0,2):
             input = QtWidgets.QLineEdit(self.loginPage)
@@ -47,9 +47,9 @@ class Login_Signup_Page:
             )
             input.setReadOnly(True)
             input.setCursor(QCursor(QtCore.Qt.CursorShape.IBeamCursor))
-            self.loginPage_input.append(input)
-        self.loginPage_input[0].setText("ID")
-        self.loginPage_input[1].setText("PW")
+            self.loginPageInput.append(input)
+        self.loginPageInput[0].setPlaceholderText("ID")
+        self.loginPageInput[1].setPlaceholderText("PW")
         
         
         self.loginButton = QtWidgets.QPushButton(self.loginPage)
@@ -75,7 +75,7 @@ class Login_Signup_Page:
 
         self.signupPage = QtWidgets.QWidget()
 
-        self.signupPage_input = []
+        self.signupPageInput = []
 
         for index in range(0,4):
 
@@ -93,14 +93,14 @@ class Login_Signup_Page:
             input.setReadOnly(True)
 
             input.setCursor(QCursor(QtCore.Qt.CursorShape.IBeamCursor))
-            self.signupPage_input.append(input)
-        self.signupPage_input[0].setText("ID")
-        self.signupPage_input[1].setText("Password")
-        self.signupPage_input[2].setText("Password confirm")
-        self.signupPage_input[3].setText("Name")
+            self.signupPageInput.append(input)
+        self.signupPageInput[0].setPlaceholderText("ID")
+        self.signupPageInput[1].setPlaceholderText("Password")
+        self.signupPageInput[2].setPlaceholderText("Password confirm")
+        self.signupPageInput[3].setPlaceholderText("Name")
 
         
-        self.signupPage_Error = []
+        self.signupPageErrorText = []
         for index in range(0,2):
             Error = QtWidgets.QLineEdit(self.signupPage)
             Error.setGeometry(100,60+180*index,300,20)
@@ -112,39 +112,39 @@ class Login_Signup_Page:
             )
             Error.setReadOnly(True)
             Error.keyPressEvent
-            self.signupPage_Error.append(Error)
+            self.signupPageErrorText.append(Error)
             
         
-        self.signupPage_IDconfirmButton = QtWidgets.QPushButton(self.signupPage)
-        self.signupPage_IDconfirmButton.setGeometry(400, 30, 60, 30)
-        self.signupPage_IDconfirmButton.setStyleSheet(
+        self.signupPageIDconfirmButton = QtWidgets.QPushButton(self.signupPage)
+        self.signupPageIDconfirmButton.setGeometry(400, 30, 60, 30)
+        self.signupPageIDconfirmButton.setStyleSheet(
             "background-color: rgb(80, 130, 255 );"
             "border-radius: 1px;"
             "color: white;"
             
         )
-        self.signupPage_IDconfirmButton.setText("결정")
-        self.signupPage_IDconfirmButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.signupPageIDconfirmButton.setText("결정")
+        self.signupPageIDconfirmButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.signupPage_signupButton = QtWidgets.QPushButton(self.signupPage)
-        self.signupPage_signupButton.setGeometry(140, 370, 220, 60)
-        self.signupPage_signupButton.setStyleSheet(
+        self.signupPageSignupButton = QtWidgets.QPushButton(self.signupPage)
+        self.signupPageSignupButton.setGeometry(140, 370, 220, 60)
+        self.signupPageSignupButton.setStyleSheet(
             "background-color: rgb(80, 130, 255 );"
             "border-radius: 10px;"
             "color: white;"
             "font: 12pt Arial;"
         )
-        self.signupPage_signupButton.setText("회원가입")
-        self.signupPage_signupButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.signupPageSignupButton.setText("회원가입")
+        self.signupPageSignupButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.signupPage_backButton = QtWidgets.QPushButton(self.signupPage)
-        self.signupPage_backButton.setGeometry(390, 430, 80, 20)
-        self.signupPage_backButton.setStyleSheet(
+        self.signupPageBackButton = QtWidgets.QPushButton(self.signupPage)
+        self.signupPageBackButton.setGeometry(390, 430, 80, 20)
+        self.signupPageBackButton.setStyleSheet(
             "border: 1px solid white;"
             "text-decoration: underline;"
         )
-        self.signupPage_backButton.setText("뒤로가기")
-        self.signupPage_backButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.signupPageBackButton.setText("뒤로가기")
+        self.signupPageBackButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
 
         
         self.stackedwidget.addWidget(self.signupPage)

@@ -57,12 +57,38 @@ class Database:
 
     def playerdataDelete1(self,num):
         data = [num]
-        print("1",num)
+
         self.cursor.execute("DELETE FROM player WHERE playlistnum = ?",data)
         self.conn.commit()
     
     def playerdataDelete2(self,num):
         data = [num]
-        print("2",num)
+
         self.cursor.execute("DELETE FROM player WHERE sequence = ?",data)
         self.conn.commit()
+   
+    def dataDelete(self, tableName, column, data):
+        sql = "DELETE FROM " + tableName
+        for index in range(0, len(column)):
+            if index == 0:
+                sql += " WHERE "
+            sql += column[index] + " =?"
+            if index < len(column) - 1:
+                sql += " AND "
+        self.cursor.execute(sql,data)
+        self.conn.commit()
+            
+    def dataRead(self,tableName, column, data): 
+        sql = "SELECT * FROM " + tableName
+        for index in range(0, len(column)):
+            if index==0:
+                sql += " WHERE "
+            sql += column[index] + "=? "
+            if index < len(column)-1:
+                sql += " AND "
+
+        self.cursor.execute(sql,data)
+        result = self.cursor.fetchall()
+        return result
+
+
