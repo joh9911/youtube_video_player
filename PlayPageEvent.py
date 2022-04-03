@@ -22,40 +22,37 @@ class PlayPageEvent:
         self.PlayPageUi.playerPageUpBarButton[1].clicked.connect(self.playerPageBackButtonEvent)
         self.PlayPageUi.playerPageUpBarButton[0].clicked.connect(self.playerPageAddButtonEvent)
         self.PlayPageUi.progressbar.sliderMoved.connect(self.setPosition)
-        self.mediaThreadlist = []
         self.dataUpdate()
-        # self.useThread()
         self.instance = vlc.Instance()
         self.mediaplayer = self.instance.media_player_new()
         self.mediaplayer.set_hwnd(self.PlayPageUi.playerPagePlayer.winId())
         
-       
-    def useThread(self):
+        
+    def mediaPlayEvent(self, event, index):
+        self.playerPageUpBarButtonEventAllDeactivate()
+        self.PlayPageUi.playerPageUpBarButton[1].disconnect()
+        self.PlayPageUi.playerPageUpBarButton[0].disconnect()
         database = Database.Database()
-        data=[self.playlistnum]
-        database.cursor.execute("SELECT * FROM player WHERE playlistnum=?",data)
-        result = database.cursor.fetchall()
-        for index in range(0,len(result)):
-            url = result[index][2]
-            mediaThumnailThread = MediaThumnailThread.MediaThumnailThread(url)
-            mediaThumnailThread.thumbnail.connect(self.uiEdit)
-            mediaThumnailThread.start()
-            self.PlayPageUi.playerPagePlayerNumber.append(result[index][0])
-    
-    def useThread1(self,int):
-        database = Database.Database()
-        data=[int]
-        database.cursor.execute("SELECT * FROM player WHERE sequence=?",data)
-        result = database.cursor.fetchall()
-        url = result[0][2]
-        mediaThumnailThread = MediaThumnailThread.MediaThumnailThread(url)
-        mediaThumnailThread.thumbnail.connect(self.uiEdit)
-        mediaThumnailThread.start()
+        number = self.PlayPageUi.playerPagePlayerNumber[index]
+        column = ["sequence"]
+        data = [number]
+        result = database.dataRead("player", column, data)
+        self.mediaSetPlay(result[0][3], result[0][2], index)
 
-    def uiEdit(self, index ,image):
-        print("uiedit 실행")
-        self.PlayPageUi.playerPageThumnail[index].setPixmap(QtGui.QPixmap(image))
-        self.PlayPageUi.playerPageThumnail[index].setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+    def mediaSetPlay(self, title, url, index):
+
+        self.PlayPageUi.playerPageMediaName.setText(title)
+        video = pafy.new(url)
+        best = video.getbest()
+        playurl = best.url
+        media = self.instance.media_new(playurl)
+        media.get_mrl()
+        self.mediaplayer.set_media(media)
+        self.mediaplayer.play()
+        self.mediaPlayerButtonActivate(index)
+        self.playerPageUpBarButtonEventAllActivate()
+        self.PlayPageUi.playerPageUpBarButton[1].clicked.connect(self.playerPageBackButtonEvent)
+        self.PlayPageUi.playerPageUpBarButton[0].clicked.connect(self.playerPageAddButtonEvent)
     
     def mediaLeftShift(self, event, index):
         database= Database.Database()
@@ -107,26 +104,20 @@ class PlayPageEvent:
         result = database.cursor.fetchall()
         for index in range(0,len(result)):
             self.playerUiAdd()
-
+            mediaThread = MediaThumnailThread.MediaThumnailThread(result[index][2], self.PlayPageUi, self.playlistnum, 0, index)
+            mediaThread.start()
+            self.PlayPageUi.playerPagePlayerNumber.append(result[index][0])
+    
     def playerPageAddButtonEvent(self):
         database = Database.Database()
         URL, ok = QtWidgets.QInputDialog.getText(self.PlayPageUi.centralwidget,"input","동영상 URL을 입력하세요:")
-        try:
-            video = pafy.new(URL)
-        except:
-            QtWidgets.QMessageBox.about(self.PlayPageUi.centralwidget,'About Title','잘못된 URL입니다.')
+        if ok:
+            self.playerUiAdd()
+            index = len(self.PlayPageUi.playerPageThumnail)-1
+            mediaThread = MediaThumnailThread.MediaThumnailThread(URL,self.PlayPageUi, self.playlistnum, 1, index)
+            mediaThread.start()
         else:
-            if ok:
-                column = ["playlistnum","url","name"]
-                data = [self.playlistnum, URL, video.title]
-                database.dataCreate("player",column,data)
-                result = database.dataRead("player", column, data)
-                index = self.playerUiAdd()
-                self.PlayPageUi.playerPagePlayerNumber.append(result[len(result)-1][0])
-                self.playerPageUpBarButtonEventAllActivate()
-                self.useThread1(result[len(result)-1][0])
-            else:
-                pass
+            pass
     
     def playerUiAdd(self):
         button = QtWidgets.QPushButton(self.PlayPageUi.playerPageGroupBox)
@@ -169,8 +160,24 @@ class PlayPageEvent:
         self.PlayPageUi.playerPageForm.addRow("",button)
         index = len(self.PlayPageUi.playerPagePlayerList)-1
         self.playerPageUpBarButtonActivate(index)
-        return index
 
+    def playerPageUpBarDeleteButtonEvent(self, event, index):
+        database = Database.Database()
+        reply = QtWidgets.QMessageBox.question(self.PlayPageUi.centralwidget,"Message","정말 삭제할까요?",QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
+            number = self.PlayPageUi.playerPagePlayerNumber[index]
+            column = ["playlistnum", "sequence"]
+            data = [self.playlistnum, number]
+            database.dataDelete("player", column, data)
+            self.playerPageUpBarButtonDeactivate(index)
+            del self.PlayPageUi.playerPageDeleteButton[index]
+            del self.PlayPageUi.playerPagePlayerList[index]
+            del self.PlayPageUi.playerPagePlayerNumber[index]
+            self.PlayPageUi.playerPageForm.removeRow(index)
+            self.playerPageUpBarButtonEventAllDeactivate()
+            self.playerPageUpBarButtonEventAllActivate()
+        else:
+            pass
 
     def playerPageBackButtonEvent(self):
         QtWidgets.QMessageBox.about(self.PlayPageUi.centralwidget,'About Title','재생목록 페이지로 이동합니다.')
@@ -206,55 +213,16 @@ class PlayPageEvent:
             self.PlayPageUi.playerPageDeleteButton[index].clicked.disconnect()
             self.PlayPageUi.playerPagePlayerList[index].clicked.disconnect()
     
-    def playerPageUpBarDeleteButtonEvent(self, event, index):
-        database = Database.Database()
-        reply = QtWidgets.QMessageBox.question(self.PlayPageUi.centralwidget,"Message","정말 삭제할까요?",QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
-        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
-            number = self.PlayPageUi.playerPagePlayerNumber[index]
-            column = ["playlistnum", "sequence"]
-            data = [self.playlistnum, number]
-            database.dataDelete("player", column, data)
-            self.playerPageUpBarButtonDeactivate(index)
-            del self.PlayPageUi.playerPageDeleteButton[index]
-            del self.PlayPageUi.playerPagePlayerList[index]
-            del self.PlayPageUi.playerPagePlayerNumber[index]
-            self.PlayPageUi.playerPageForm.removeRow(index)
-            self.playerPageUpBarButtonEventAllDeactivate()
-            self.playerPageUpBarButtonEventAllActivate()
-        else:
-            pass
+    
    
     def allDeleteList(self):
         for index in range(0,len(self.PlayPageUi.playerPageDeleteButton)):
-            del self.PlayPageUi.playerPageDeleteButton[0]
             del self.PlayPageUi.playerPagePlayerList[0]
-            del self.PlayPageUi.playerPagePlayerNumber[0]
+            del self.PlayPageUi.playerPageDeleteButton[0]
+            del self.PlayPageUi.playerPageThumnail[0]
+            del self.PlayPageUi.playerPageTitle[0]
             self.PlayPageUi.playerPageForm.removeRow(0)
-    
-    def mediaPlayEvent(self, event, index):
-        self.playerPageUpBarButtonEventAllDeactivate()
-        self.PlayPageUi.playerPageUpBarButton[1].disconnect()
-        self.PlayPageUi.playerPageUpBarButton[0].disconnect()
-        database = Database.Database()
-        number = self.PlayPageUi.playerPagePlayerNumber[index]
-        column = ["sequence"]
-        data = [number]
-        result = database.dataRead("player", column, data)
-        self.mediaSetPlay(result[0][3], result[0][2], index)
-   
-    def mediaSetPlay(self, title, url, index):
-        self.PlayPageUi.playerPageMediaName.setText(title)
-        video = pafy.new(url)
-        best = video.getbest()
-        playurl = best.url
-        media = self.instance.media_new(playurl)
-        media.get_mrl()
-        self.mediaplayer.set_media(media)
-        self.mediaplayer.play()
-        self.mediaPlayerButtonActivate(index)
-        self.playerPageUpBarButtonEventAllActivate()
-        self.PlayPageUi.playerPageUpBarButton[1].clicked.connect(self.playerPageBackButtonEvent)
-        self.PlayPageUi.playerPageUpBarButton[0].clicked.connect(self.playerPageAddButtonEvent)
+
     
     def mediaPlayerButtonActivate(self, index):
         self.PlayPageUi.playerPagePlayButton[0].clicked.connect(lambda event, nowIndex = index: self.mediaLeftShift(event, nowIndex))

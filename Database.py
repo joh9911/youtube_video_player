@@ -54,18 +54,6 @@ class Database:
         self.cursor.execute("DELETE FROM playlist WHERE id=? AND sequence=?",data)
         self.conn.commit()
         self.conn.execute("PRAGMA foreign_keys = 1")
-
-    def playerdataDelete1(self,num):
-        data = [num]
-
-        self.cursor.execute("DELETE FROM player WHERE playlistnum = ?",data)
-        self.conn.commit()
-    
-    def playerdataDelete2(self,num):
-        data = [num]
-
-        self.cursor.execute("DELETE FROM player WHERE sequence = ?",data)
-        self.conn.commit()
    
     def dataDelete(self, tableName, column, data):
         sql = "DELETE FROM " + tableName
