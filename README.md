@@ -3,3 +3,4 @@ pafy 라이브러리를 이용한 동영상 플레이어를 만들어보았습�
 
 
 ## 실행 화면 
+<img src="https://user-images.githubusercontent.com/102031783/198501667-093fb6ab-266a-43f5-b7da-fa137ab6cd05.gif" widht="30%" height="30%"/>
